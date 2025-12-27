@@ -5,22 +5,10 @@ const NameInputModal = ({ isOpen, timeTaken, onSubmit }) => {
 
     if (!isOpen) return null;
 
-    const handleNameSubmit = async (name) => {
-        try {
-            await saveLeaderboardEntry({
-                name,
-                time: finalTime,
-                score: rules.length * 1000 - finalTime * 5
-            });
-
-            setShowNameModal(false);
-            alert("🎉 Saved to leaderboard!");
-        } catch (err) {
-            console.error(err);
-            alert("❌ Failed to save score");
-        }
+    const handleSubmit = () => {
+        if (!name.trim()) return;
+        onSubmit(name.trim());
     };
-
 
     const formatTime = (seconds) => {
         const m = String(Math.floor(seconds / 60)).padStart(2, "0");
