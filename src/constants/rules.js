@@ -243,8 +243,22 @@ export const rules = [
         validate: (pwd) => {
             const m = pwd.match(/(\d+[\+\-\*\/]\d+)/);
             if (!m) return false;
-            const v = eval(m[1]);
-            return Number.isFinite(v) && v === 42;
+            // Safe evaluation without eval()
+            const expr = m[1];
+            const parts = expr.match(/(\d+)([\+\-\*\/])(\d+)/);
+            if (!parts) return false;
+            const [, a, op, b] = parts;
+            const numA = parseInt(a, 10);
+            const numB = parseInt(b, 10);
+            let result;
+            switch (op) {
+                case '+': result = numA + numB; break;
+                case '-': result = numA - numB; break;
+                case '*': result = numA * numB; break;
+                case '/': result = numB !== 0 ? numA / numB : NaN; break;
+                default: return false;
+            }
+            return Number.isFinite(result) && result === 42;
         }
     },
 
@@ -280,11 +294,21 @@ export const rules = [
         id: 37,
         description: "Include a palindrome of length ≥ 3.",
         validate: (pwd) => {
-            for (let i = 0; i < pwd.length - 2; i++)
-                for (let j = i + 2; j < pwd.length; j++) {
-                    const s = pwd.slice(i, j + 1);
-                    if (s === s.split("").reverse().join("")) return true;
+            // Optimized palindrome detection - O(n²) instead of O(n³)
+            for (let center = 1; center < pwd.length - 1; center++) {
+                // Check odd-length palindromes
+                let left = center - 1, right = center + 1;
+                while (left >= 0 && right < pwd.length && pwd[left] === pwd[right]) {
+                    if (right - left + 1 >= 3) return true;
+                    left--; right++;
                 }
+                // Check even-length palindromes
+                left = center; right = center + 1;
+                while (left >= 0 && right < pwd.length && pwd[left] === pwd[right]) {
+                    if (right - left + 1 >= 3) return true;
+                    left--; right++;
+                }
+            }
             return false;
         }
     },

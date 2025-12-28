@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { rules } from "./rules";
-import { saveLeaderboardEntry } from "./services/leaderboardService";
-import NameInputModal from "./components/NameInputModal";
-import Confetti from "react-confetti";
 import { Link } from "react-router-dom";
+import { rules } from "../constants/rules";
+import { saveLeaderboardEntry } from "../services/leaderboardService";
+import NameInputModal from "../components/NameInputModal";
+import Confetti from "react-confetti";
 
 
 const SUBMIT_KEY = "password_game_submitted";
@@ -129,8 +129,13 @@ const PasswordGame = () => {
         }
     };
 
-    const copyPassword = () => {
-        navigator.clipboard.writeText(password);
+    const copyPassword = async () => {
+        try {
+            await navigator.clipboard.writeText(password);
+        } catch (err) {
+            // Fallback for browsers that don't support clipboard API
+            console.warn('Clipboard copy failed:', err);
+        }
     };
 
     const formatTime = (seconds) => {
@@ -218,12 +223,12 @@ const PasswordGame = () => {
                 ) : (
                     <div className="bg-emerald-500 p-8 rounded-2xl text-center text-3xl font-black italic">
                         ACCESS GRANTED
-                        <a
-                            href="/leaderboard"
+                        <Link
+                            to="/leaderboard"
                             className="block mt-4 text-lg text-black underline font-bold hover:text-zinc-800"
                         >
                             View Leaderboard →
-                        </a>
+                        </Link>
                     </div>
                 )}
             </div>
