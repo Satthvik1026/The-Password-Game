@@ -4,6 +4,8 @@ import { rules } from "../constants/rules";
 import { saveLeaderboardEntry } from "../services/leaderboardService";
 import NameInputModal from "../components/NameInputModal";
 import Confetti from "react-confetti";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const SUBMIT_KEY = "password_game_submitted";
@@ -132,8 +134,23 @@ const PasswordGame = () => {
     const copyPassword = async () => {
         try {
             await navigator.clipboard.writeText(password);
+            toast.success("Password copied to clipboard!", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false
+            });
         } catch (err) {
-            // Fallback for browsers that don't support clipboard API
+            toast.error("Failed to copy password", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false
+            });
             console.warn('Clipboard copy failed:', err);
         }
     };
@@ -160,7 +177,7 @@ const PasswordGame = () => {
     return (
 
 
-        <div className="relative flex flex-col items-center w-full max-w-2xl mx-auto p-10 bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl">
+        <div className="relative flex flex-col items-center w-full max-w-2xl mx-auto p-8 bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl" style={{width: '500px', height: '650px'}}>
             {isGameComplete && (
                 <Confetti
                     width={windowSize.width}
@@ -238,6 +255,7 @@ const PasswordGame = () => {
                 timeTaken={finalTime}
                 onSubmit={handleNameSubmit}
             />
+            <ToastContainer />
         </div>
     );
 };
